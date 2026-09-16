@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>School Hat Tracker 🎩</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- QR Code generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- QR Code scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- Leaflet map -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-hat">🎩</div>
+            <div>
+                <h1>School Hat</h1>
+                <span>Tracker</span>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-button active" onclick="showPage('dashboard')">
+                🏠 Dashboard
+            </button>
+
+            <button class="nav-button" onclick="showPage('scan')">
+                📷 Scan QR
+            </button>
+
+            <button class="nav-button" onclick="showPage('hats')">
+                🎩 All Hats
+            </button>
+
+            <button class="nav-button" onclick="showPage('add')">
+                ➕ Add Hat
+            </button>
+
+            <button class="nav-button" onclick="showPage('print')">
+                🖨️ Print QR Codes
+            </button>
+        </nav>
+
+        <div class="sidebar-note">
+            💗<br>
+            Keep our hats<br>
+            safe & accounted for!
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+                <h2>🌍 Last Known Hat Locations</h2>
+
+        <p>
+            Locations shown here are the location of the device
+            at the time the hat's QR code was scanned.
+        </p>
+    </div>
+
+    <div class="map-card">
+
+        <div id="world-map"></div>
+
+        <div class="map-legend">
+            <span>🎩 Hat location</span>
+            <span id="map-count">0 hats located</span>
+        </div>
+
+    </div>
+
+</section>
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section id="dashboard" class="page active-page">
+
+            <div class="top-bar">
+                <div>
+                    <p class="small-heading">School Hat Tracker</p>
+                    <h2>Welcome back, Staff! 👋</h2>
+                    <p class="subtitle">
+                        Here's an overview of your school hats.
+                    </p>
+                </div>
+
+                <div class="date">
+                    📅 <span id="today"></span>
+                </div>
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <div class="stat-icon">🎩</div>
+                    <div>
+                        <span>Total Hats</span>
+                        <strong id="total-hats">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card available">
+                    <div class="stat-icon">🟢</div>
+                    <div>
+                        <span>Available</span>
+                        <strong id="available-hats">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card assigned">
+                    <div class="stat-icon">🔵</div>
+                    <div>
+                        <span>Assigned</span>
+                        <strong id="assigned-hats">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card missing">
+                    <div class="stat-icon">🟠</div>
+                    <div>
+                        <span>Missing</span>
+                        <strong id="missing-hats">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card retired">
+                    <div class="stat-icon">🔴</div>
+                    <div>
+                        <span>Retired</span>
+                        <strong id="retired-hats">0</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="search-area">
+
+                <input
+                    type="text"
+                    id="dashboard-search"
+                    placeholder="🔍 Search by hat ID, size or status..."
+                    oninput="displayHats()"
+                >
+
+                <select id="dashboard-filter" onchange="displayHats()">
+                    <option value="all">All statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="Missing">Missing</option>
+                    <option value="Retired">Retired</option>
+                </select>
+
+            </div>
+<button class="nav-button" onclick="showPage('map-page')">
+    🌍 Hat Map
+</button>
+
+            <!-- HAT TABLE -->
+
+            <div class="card">
+
+                <div class="card-heading">
+                    <h3>🎩 Recent Hats</h3>
+
+                    <button class="primary-button" onclick="showPage('add')">
+                        + Add Hat
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Hat ID</th>
+                                <th>Size</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="hat-table">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= SCAN ================= -->
+
+        <section id="scan" class="page">
+
+            <div class="page-heading">
+                <p class="small-heading">QR Scanner</p>
+                <h2>📷 Scan a School Hat</h2>
+                <p>
+                    Scan the QR code attached to a hat.
+                </p>
+            </div>
+
+            <div class="scanner-card">
+
+                <div id="reader"></div>
+
+                <p class="scanner-help">
+                    Point your camera at a hat's QR code.
+                </p>
+
+                <div id="scan-result"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= ALL HATS ================= -->
+
+        <section id="hats" class="page">
+
+            <div class="page-heading">
+                <p class="small-heading">Hat Inventory</p>
+                <h2>🎩 All School Hats</h2>
+                <p>View and manage every hat.</p>
+            </div>
+
+            <div class="search-area">
+
+                <input
+                    type="text"
+                    id="hat-search"
+                    placeholder="🔍 Search hats..."
+                    oninput="displayAllHats()"
+                >
+
+                <select id="hat-status-filter" onchange="displayAllHats()">
+                    <option value="all">All statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="Missing">Missing</option>
+                    <option value="Retired">Retired</option>
+                </select>
+
+            </div>
+
+            <div id="all-hats-grid" class="hat-grid"></div>
+
+        </section>
+
+
+
+        <!-- ================= ADD HAT ================= -->
+
+        <section id="add" class="page">
+
+            <div class="page-heading">
+                <p class="small-heading">Inventory</p>
+                <h2>➕ Add a New Hat</h2>
+                <p>Create a unique ID and QR code for your hat.</p>
+            </div>
+
+            <div class="form-card">
+
+                <form id="hat-form">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label>Hat Type</label>
+
+                            <select id="hat-type">
+                                <option>Bucket Hat</option>
+                                <option>Wide Brim Hat</option>
+                                <option>Baseball Cap</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Size</label>
+
+                            <select id="hat-size">
+                                <option>XS</option>
+                                <option>S</option>
+                                <option>M</option>
+                                <option>L</option>
+                                <option>XL</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>Colour</label>
+
+                            <select id="hat-colour">
+                                <option>Navy</option>
+                                <option>Black</option>
+                                <option>Blue</option>
+                                <option>Green</option>
+                                <option>Red</option>
+                                <option>Other</option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>Location</label>
+
+                            <input
+                                type="text"
+                                id="hat-location"
+                                placeholder="e.g. School Office"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>Notes</label>
+
+                        <textarea
+                            id="hat-notes"
+                            placeholder="Optional notes about the hat..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <button class="primary-button large-button" type="submit">
+                        🎩 Create Hat & QR Code
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- GENERATED QR -->
+
+            <div id="generated-hat" class="generated-card hidden">
+
+                <h3>🎉 Hat Created!</h3>
+
+                <p>
+                    Print or save this QR code and attach it to the hat.
+                </p>
+
+                <div id="new-qr"></div>
+
+                <h2 id="new-hat-id"></h2>
+
+                <button class="primary-button" onclick="window.print()">
+                    🖨️ Print QR Code
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= PRINT ================= -->
+
+        <section id="print" class="page">
+
+            <div class="page-heading">
+                <p class="small-heading">QR Labels</p>
+                <h2>🖨️ Print Hat QR Codes</h2>
+                <p>Print labels for all your hats.</p>
+            </div>
+
+            <button class="primary-button" onclick="printQRLabels()">
+                🖨️ Generate Printable Labels
+            </button>
+
+            <div id="print-area" class="print-grid"></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- HAT DETAILS MODAL -->
+
+    <div id="modal" class="modal">
+
+        <div class="modal-content">
+
+            <button class="close-button" onclick="closeModal()">×</button>
+
+            <div id="modal-content"></div>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
